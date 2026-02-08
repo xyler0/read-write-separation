@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  authorId    String    @map("author_id")
+  published   Boolean   @default(false)
+  viewCount   Int       @default(0) @map("view_count")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("posts")
+  @@index([authorId])
+  @@index([published])
+}
+
+model Analytics {
+  id          String    @id @default(cuid())
+  postId      String    @map("post_id")
+  eventType   String    @map("event_type")
+  metadata    String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("analytics")
+  @@index([postId])
+  @@index([createdAt])
+}
