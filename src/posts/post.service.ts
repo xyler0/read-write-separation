@@ -43,15 +43,19 @@ export class PostService {
   }
 
   async viewPost(id: string): Promise<Post> {
-    await this.postRepo.incrementViewCount(id);
-    
-    await this.analyticsRepo.create({
-      postId: id,
-      eventType: 'post_viewed',
-    });
+  await this.postRepo.incrementViewCount(id);
 
-    return this.postRepo.findById(id, true);
-  }
+  await this.analyticsRepo.create({
+    postId: id,
+    eventType: 'post_viewed',
+  });
+
+  const post = await this.postRepo.findById(id, true);
+  if (!post) throw new NotFoundException('Post not found');
+
+  return post;
+}
+
 
   async listPublishedPosts(): Promise<Post[]> {
     return this.postRepo.findPublished();
